@@ -1,0 +1,29 @@
+#include<stdio.h>
+#include<stdlib.h>
+int main()
+{
+    int a[100],i,j,key=0,n;
+    printf("the size of the array:");
+    scanf("%d",&n);
+    printf("the elements are");
+    for(i=0;i<n;i++)
+    scanf("%d",&a[i]);
+
+    for(i=1;i<n;i++)
+    {
+        key=a[i];
+        j=i-1;
+        while(j>=0 && a[j]>key)
+        {
+            a[j+1]=a[j];
+            j=j-1;
+        }
+        a[j+1]=key;
+    }
+    printf("the sorted elements are:");
+    for(i=0;i<n;i++)
+    printf("%d\t",a[i]);
+    return 0;
+}
+
+
