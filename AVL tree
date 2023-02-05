@@ -1,0 +1,385 @@
+#include<stdlib.h>
+struct node
+{
+        	int data,balfac;
+        	struct node *right;
+        	struct node *left;
+}*root=NULL,*temp,*ptr,*temp1;
+int d,c,lite;
+int update_balancefactor(struct node *temp)
+{
+    int Count=0,count1=0;
+    if(temp->left!=NULL)
+    {
+        Count=update_balancefactor(temp->left)+1;
+    }
+    if(temp->right!=NULL)
+    {
+        count1=update_balancefactor(temp->right)+1;
+    }
+    temp->balfac=Count-count1;
+    if(Count<=count1)
+    {
+        return count1;
+    }
+    else
+    {
+	    return Count;
+    }
+}
+struct node *parent_return(int d)
+{
+    temp=root;
+    ptr=NULL;
+    while(temp->data!=d)
+    { 
+        ptr=temp;
+        if(d<temp->data)
+            temp=temp->left;
+        else 
+            temp=temp->right;
+    }
+    return ptr;
+}
+int flag(struct node *temp,struct node *parent)
+{
+        	if(parent->data<temp->data){
+                    	return 1;
+        	}
+        	else{
+                    	return 0;
+        	}
+}
+void insert_by_reference(struct node *present,struct node *present1)
+{
+        	if(present==NULL){
+                    	return ;
+        	}
+        	else{
+                    	struct node *temp1;
+                    	while(present1!=NULL){
+                                	temp1=present1;
+                                	if(present1->data < present->data){
+                                            	present1=present1->right;
+                                	}
+                                	else{
+                                            	present1=present1->left;
+                                	}
+                    	}
+                    	if(temp1->data <present->data){
+                                	temp1->right=present;
+                    	}
+                    	else{
+                                	temp1->left=present;
+                    	}
+        	}
+}
+void rotation(struct node *temp)
+{
+    struct node *parent=parent_return(temp->data);
+        	struct node *temp1=NULL,*temp2=NULL,*temp3=NULL;
+        	if(temp->balfac <-1 && (temp->right)->balfac<=-1){
+                    	if(parent!=NULL){
+                                	if(flag(temp,parent)==1){
+                                            	parent->right=temp->right;
+                                	}
+                                	else{
+                                            	parent->left=temp->right;
+                                	}
+                    	}
+                    	temp2=temp->right->left;
+                    	temp1=temp->right;
+                    	temp->right->left=temp;
+                    	temp->right=NULL;
+        	}
+        	else if((temp->balfac>1) && ((temp->left)->balfac>=1)){
+                    	if(parent!=NULL){
+                                	if(flag(temp,parent)==1){
+                                            	parent->right=temp->left;
+                                	}
+                                	else{
+                                            	parent->left=temp->left;
+                                	}                              	
+                    	}
+                    	temp2=(temp->left->right);
+                    	temp1=temp->left;
+                    	(temp->left)->right=temp;
+                    	temp->left=NULL;
+        	}
+        	else if((temp->balfac<-1) && ((temp->right)->balfac>=1)){
+                    	if(parent!=NULL){
+                                	if(flag(temp,parent)==1){
+                                            	parent->right=(temp->right)->left;
+                                	}
+                                	else{
+                                            	parent->left=(temp->right)->left;
+                                	}
+                    	}
+                    	temp2=(temp->right->left->left);
+                    	temp3=temp->right->left->right;
+                    	temp1=temp->right->left;
+                    	((temp->right)->left)->left=temp;
+                    	((temp->right)->left)->right=temp->right;
+                    	temp->right->left=NULL;
+                    	temp->right=0;
+ 
+        	}
+        	else if((temp->balfac>1) && ((temp->left)->balfac<=-1)){
+                    	if(parent!=NULL){
+                                	if(flag(temp,parent)==1){
+                                            	parent->right=(temp->left)->right;
+                                	}
+                                	else{
+                                            	parent->left=(temp->left)->right;
+                                	}
+                    	}
+                    	temp2=(temp->left->right->left);
+                    	temp3=temp->left->right->right;
+                    	temp1=temp->left->right;
+                    	((temp->left)->right)->left=temp->left;
+                    	((temp->left)->right)->right=temp;
+                    	temp->left->right=NULL;
+                    	temp->left=NULL;
+        	}
+        	if(temp==root){
+                    	root=temp1;
+        	}
+        	insert_by_reference(temp2,temp1);
+        	insert_by_reference(temp3,temp1);
+        	lite=update_balancefactor(root);
+}
+void traverse_rotation(struct node *temp)
+{
+    if(temp->left!=NULL)
+    {
+        traverse_rotation(temp->left);
+    }
+    if(temp->right!=NULL)
+    {
+        traverse_rotation(temp->right);
+    }
+    if(temp->balfac>1||temp->balfac<-1)
+    {
+        rotation(temp);
+    }
+}
+void insert(int d)
+{
+        	if(d<temp->data)
+        	{
+                    	if(temp->left==NULL)
+                    	{
+                                	temp->left=ptr;
+                                	ptr->left=NULL;
+                                	ptr->right=NULL;
+                    	}
+        	        	else
+                    	{
+                                	temp=temp->left;
+                                	insert(d);     	
+                    	}
+        	}
+        	if(d>temp->data)
+        	{
+                    	if(temp->right==NULL)
+                    	{
+                                	temp->right=ptr;
+                                	ptr->left=NULL;
+                                	ptr->right=NULL;
+                    	}
+                    	else
+                    	{
+                                	temp=temp->right;
+                                	insert(d);
+                    	}
+        	}
+    lite=update_balancefactor(root);
+        	traverse_rotation(root);
+}
+void inorder(struct node* temp)
+{
+   if (temp==NULL)
+   {
+      return;
+   }
+   inorder(temp->left);
+   printf("%d  ",temp->data);
+   inorder(temp->right);
+}
+void preorder(struct node* temp)
+{
+   if (temp==NULL)
+   {
+      return;
+   }
+   printf("%d  ",temp->data);
+   preorder(temp->left);
+   preorder(temp->right);
+}
+void postorder(struct node* temp)
+{
+   if (temp==NULL)
+   {
+      return;
+   }
+   postorder(temp->left);
+   postorder(temp->right);
+   printf("%d  ",temp->data);
+}
+void search(int d)
+{
+        	c++;
+        	if(d<temp->data)
+        	{
+                    	if(temp->left==NULL)
+                    	{
+                                	printf("\n%d not found\n",d);
+                    	}
+                    	else
+                    	{
+                                	temp=temp->left;
+                                	search(d);
+                    	}
+        	}
+        	else if(d>temp->data)
+        	{
+                    	if(temp->right==NULL)
+                    	{
+                                	printf("\n%d not found\n",d);
+                    	}
+                    	else
+                    	{
+                                	temp=temp->right;
+                                	search(d);
+                    	}
+        	}
+        	else
+        	{
+                    	printf("\n%d found at level %d\n",d,c);
+        	}
+}
+struct node *min(struct node *temp) 
+{
+    while(temp->left!=NULL)
+        	{
+        temp=temp->left;
+    }
+    return temp;
+}
+void delete(int d)
+{
+        	ptr=NULL;
+        	temp=root;
+        	while(temp!=NULL&&temp->data!=d)
+    { 
+        ptr=temp;
+        if(d<temp->data)
+            temp=temp->left;
+        else 
+            temp=temp->right;
+    }
+        	if(temp==NULL)
+        return;
+    if(temp->left==NULL&&temp->right==NULL)
+    { 
+        if(temp!=root) 
+        {
+            if(ptr->left==temp)
+            	ptr->left=NULL;
+            else
+            	ptr->right=NULL;
+        }
+        else
+            root=NULL;
+        free(temp); 	
+    }
+    else if(temp->left&&temp->right)
+    { 
+                    	temp1=temp;
+        struct node *next=min(temp->right); 
+        int val=next->data;
+        delete(next->data);
+        temp1->data=val;
+    }
+    else
+    {
+        struct node *child=(temp->left)?temp->left:temp->right; 
+        if(temp!=root)
+        {
+            if(temp==ptr->left)
+            	ptr->left=child;
+            else
+            	ptr->right=child;
+        }
+        else
+            root=child;
+        free(temp);
+    }
+}
+void main()
+{
+        	int b;
+        	while(1)
+        	{
+        	 printf("\nMENU:\n1.INSERT\n2.DISPLAY\n3.SEARCH\n4.DELETE\n5.EXIT\nEnter: ");
+                    	scanf("%d",&b);
+                    	switch(b)
+                    	{
+                                	case 1:
+                                            	printf("enter the data: ");
+                                            	scanf("%d",&d);
+                                            	ptr=(struct node*)malloc(sizeof(struct node));
+                                            	ptr->data=d;
+                                            	if(root==NULL)
+                                            	{
+                                                        	root=ptr;
+                                                        	root->right=NULL;
+                                                        	root->left=NULL;
+                                            	}
+                                            	else
+                                            	{
+                                                        	temp=root;
+                                                        	insert(d);
+                                            	}
+                                            	break;
+                                	case 2:
+                                            	if(root==NULL)
+                    	{
+                                	printf("\nNo tree available\n");
+                    	}
+                    	else
+                    	{
+                                	printf("\nIn-Order: ");
+                                	inorder(root);\
+                                                        	printf("\nPre-Order: ");
+                                	preorder(root);
+                                                        	printf("\nPost-Order: ");
+                                	postorder(root);
+                                	printf("\n");
+                    	}
+                    	break;
+            case 3:
+                    	temp=root;
+                                            	c=0;
+                    	printf("what to search: ");
+                    	scanf("%d",&d);
+                                            	if(root==NULL)
+                                            	printf("\nNo tree available\n");
+                                            	else
+                    	search(d);
+                    	break;
+                                	case 4:
+                                	        	temp=root;
+                                            	printf("what to delete: ");
+                                            	scanf("%d",&d);
+                                            	delete(d);
+                                            	lite=update_balancefactor(root);
+                                            	traverse_rotation(root);
+                                            	printf("\n");
+                                            	break;
+            case 5:
+                    	exit(0);
+                                	default:printf("\ninvalid entry\n");
+                    	}
+        	}
+}
